@@ -48,6 +48,9 @@ Desktop.ini
 # ============ 独立项目：GomokuGame 五子棋（有自己的仓库，不属本项目）============
 GomokuGame/
 
+# ============ 独立项目：Livelist 直播源（有自己的仓库，不属本项目）============
+Livelist_work/
+
 # ============ WorkBuddy / 编辑器工作区内部数据 ============
 .workbuddy/
 
