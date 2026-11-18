@@ -45,6 +45,9 @@ Desktop.ini
 .idea/
 *.swp
 
+# ============ 独立项目：GomokuGame 五子棋（有自己的仓库，不属本项目）============
+GomokuGame/
+
 # ============ WorkBuddy / 编辑器工作区内部数据 ============
 .workbuddy/
 
