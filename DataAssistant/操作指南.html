@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据助手 DataAssistant · 操作指南</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#1f2933; --ink-soft:#5a6672;
+    --line:#e3e8ef; --brand:#0f766e; --brand-soft:#e6f4f2;
+    --warn:#b45309; --warn-soft:#fef3c7; --danger:#b91c1c; --danger-soft:#fee2e2;
+    --ok:#047857; --code-bg:#f8fafc;
+    --mono:"Cascadia Mono","Consolas","SFMono-Regular",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Segoe UI",system-ui,sans-serif;
+    font-size:15px; line-height:1.75;
+  }
+  /* ---------- 布局 ---------- */
+  .wrap{display:flex; align-items:flex-start; max-width:1240px; margin:0 auto; padding:24px 16px 80px}
+  nav.toc{
+    position:sticky; top:24px; flex:0 0 232px; margin-right:24px;
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:16px 14px; box-shadow:0 1px 3px rgba(16,24,40,.05);
+  }
+  nav.toc h3{margin:0 0 10px; font-size:13px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase}
+  nav.toc a{
+    display:block; padding:6px 10px; border-radius:7px; text-decoration:none;
+    color:var(--ink-soft); font-size:14px; border-left:3px solid transparent;
+  }
+  nav.toc a:hover{background:var(--brand-soft); color:var(--brand)}
+  nav.toc a.sub{padding-left:22px; font-size:13px}
+  main{flex:1 1 auto; min-width:0}
+  /* ---------- 头部 ---------- */
+  header.hero{
+    background:linear-gradient(135deg,#0f766e,#115e59 55%,#0e7490);
+    color:#fff; border-radius:14px; padding:28px 30px; margin-bottom:22px;
+    box-shadow:0 6px 20px rgba(15,118,110,.22);
+  }
+  header.hero h1{margin:0 0 6px; font-size:28px; letter-spacing:.02em}
+  header.hero p{margin:0; opacity:.92; font-size:14.5px}
+  header.hero .meta{margin-top:14px; display:flex; flex-wrap:wrap; gap:8px}
+  header.hero .tag{
+    background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.28);
+    padding:3px 11px; border-radius:99px; font-size:12.5px;
+  }
+  /* ---------- 卡片/章节 ---------- */
+  section{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:22px 26px; margin-bottom:18px; box-shadow:0 1px 3px rgba(16,24,40,.04);
+  }
+  section h2{
+    margin:0 0 14px; padding-bottom:10px; border-bottom:2px solid var(--brand-soft);
+    font-size:20px; color:var(--brand); display:flex; align-items:center; gap:9px;
+  }
+  section h2 .num{
+    background:var(--brand); color:#fff; width:28px; height:28px; border-radius:8px;
+    display:inline-flex; align-items:center; justify-content:center; font-size:14px; flex:0 0 auto;
+  }
+  section h3{margin:22px 0 8px; font-size:16px; color:var(--ink)}
+  section h4{margin:16px 0 6px; font-size:14.5px; color:var(--ink-soft)}
+  p{margin:8px 0}
+  ul,ol{margin:8px 0 8px 0; padding-left:22px}
+  li{margin:4px 0}
+  code{
+    font-family:var(--mono); font-size:13px; background:var(--code-bg);
+    border:1px solid var(--line); border-radius:5px; padding:1px 5px; color:#0b7285;
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-left:3px solid var(--brand);
+    border-radius:8px; padding:12px 14px; overflow-x:auto; font-family:var(--mono);
+    font-size:13px; line-height:1.6; margin:10px 0;
+  }
+  pre.code-plain{border-left-color:var(--ink-soft)}
+  /* ---------- 表格 ---------- */
+  table{border-collapse:collapse; width:100%; margin:12px 0; font-size:14px}
+  th,td{border:1px solid var(--line); padding:8px 11px; text-align:left; vertical-align:top}
+  th{background:var(--brand-soft); color:#0b5b55; font-weight:600}
+  tbody tr:nth-child(even){background:#fafcfc}
+  td.nowrap{white-space:nowrap}
+  /* ---------- 提示块 ---------- */
+  .callout{border-radius:9px; padding:11px 15px; margin:12px 0; border-left:4px solid; font-size:14.5px}
+  .callout .t{font-weight:700; margin-right:6px}
+  .c-warn{background:var(--warn-soft); border-color:var(--warn); color:#7c2d12}
+  .c-danger{background:var(--danger-soft); border-color:var(--danger); color:#7f1d1d}
+  .c-ok{background:#ecfdf5; border-color:var(--ok); color:#065f46}
+  .c-info{background:var(--brand-soft); border-color:var(--brand); color:#0b5b55}
+  .callout ul{margin:6px 0 0}
+  /* ---------- 步骤 ---------- */
+  ol.steps{counter-reset:s; list-style:none; padding-left:0}
+  ol.steps>li{
+    counter-increment:s; position:relative; padding:6px 0 6px 40px; margin:6px 0;
+  }
+  ol.steps>li::before{
+    content:counter(s); position:absolute; left:0; top:6px; width:26px; height:26px;
+    background:var(--brand); color:#fff; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;
+  }
+  /* ---------- 快捷键网格 ---------- */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); gap:12px; margin:12px 0}
+  .tile{border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:#fcfdfd}
+  .tile b{display:block; color:var(--brand); margin-bottom:3px; font-size:14.5px}
+  .tile span{font-size:13.5px; color:var(--ink-soft)}
+  kbd{
+    font-family:var(--mono); font-size:12px; background:#fff; border:1px solid #cbd5e1;
+    border-bottom-width:2px; border-radius:5px; padding:1px 6px; color:var(--ink);
+  }
+  /* ---------- 页脚 ---------- */
+  footer{text-align:center; color:var(--ink-soft); font-size:13px; padding:10px 0 0}
+  .top-link{position:fixed; right:20px; bottom:20px; background:var(--brand); color:#fff;
+    width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    text-decoration:none; box-shadow:0 4px 12px rgba(15,118,110,.35); font-size:18px}
+  @media (max-width:900px){
+    .wrap{flex-direction:column; padding:14px}
+    nav.toc{position:static; width:100%; margin:0 0 16px}
+  }
+  @media print{
+    body{background:#fff}
+    nav.toc,.top-link{display:none}
+    section{break-inside:avoid; box-shadow:none; border:1px solid #ccc}
+    header.hero{background:#0f766e !important; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="toc">
+  <h3>目录</h3>
+  <a href="#s1">1. 概览</a>
+  <a href="#s2">2. 安装与卸载</a>
+  <a href="#s3">3. 托盘与生命周期</a>
+  <a href="#s4">4. 数据整理</a>
+  <a href="#s5">5. 数据比对</a>
+  <a href="#s6">6. 图片查找</a>
+  <a href="#s7">7. 系统优化</a>
+  <a href="#s8">8. 定时自动备份</a>
+  <a href="#s9">9. 定时自动删图</a>
+  <a href="#s10">10. 运行日志</a>
+  <a href="#s11">11. 设置保存与配置</a>
+  <a href="#s12">12. 常见问题</a>
+  <a href="#s13">13. 版本信息</a>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>数据助手 DataAssistant · 操作指南</h1>
+  <p>把日常最耗时的重复劳动整合到一个程序里：数据整理、数据比对、图片查找、系统优化，外加无人值守的定时备份与定时删图。</p>
+  <div class="meta">
+    <span class="tag">版本 v1.1.0</span>
+    <span class="tag">.NET Framework 4.8</span>
+    <span class="tag">Windows 7 / 10 / 11</span>
+    <span class="tag">绿色单文件 · 自带依赖</span>
+  </div>
+</header>
+
+<!-- ===================== 1 概览 ===================== -->
+<section id="s1">
+  <h2><span class="num">1</span>概览</h2>
+  <p>本程序包含 6 个功能模块，通过顶部标签页切换：</p>
+  <div class="grid">
+    <div class="tile"><b>① 数据整理</b><span>汇总一堆 CSV/TXT/Excel，按规则清洗，再导出</span></div>
+    <div class="tile"><b>② 数据比对</b><span>两个表格按 SN 对齐，逐列比对差异并导出</span></div>
+    <div class="tile"><b>③ 图片查找</b><span>按 SN 清单把图片从源目录复制到目标目录</span></div>
+    <div class="tile"><b>④ 系统优化</b><span>垃圾清理、磁盘分析、启动项、性能与网卡调优</span></div>
+    <div class="tile"><b>⑤ 定时自动备份</b><span>按天/周/月周期自动备份文件夹，超限自动清理</span></div>
+    <div class="tile"><b>⑥ 定时自动删图</b><span>最多 10 个任务，按天清理超龄图片文件夹</span></div>
+  </div>
+  <div class="callout c-info">
+    <span class="t">运行时三件事</span>
+    <ul>
+      <li><b>配置文件</b>保存在程序启动目录：<code>&lt;启动目录&gt;\settings.xml</code>（不可写时自动改存 <code>%APPDATA%\DataAssistant\</code>）</li>
+      <li><b>日志文件</b>保存在程序启动目录：<code>&lt;启动目录&gt;\Log\log_YYYY-MM-DD.txt</code>（按天滚动）</li>
+      <li><b>托盘常驻</b>：点窗口右上角 X 只是最小化到托盘，进程继续后台执行定时任务</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== 2 安装卸载 ===================== -->
+<section id="s2">
+  <h2><span class="num">2</span>安装与卸载</h2>
+
+  <h3>安装（推荐用安装包）</h3>
+  <ol class="steps">
+    <li>双击 <code>DataAssistantSetup.exe</code>，第一页确认安装目录（默认 <code>C:\Program Files\DataAssistant</code>），可勾选「创建桌面快捷方式」</li>
+    <li>第二页显示进度条与实时文件日志</li>
+    <li>第三页完成后可勾选「立即启动」</li>
+  </ol>
+  <p>安装完后会得到：开始菜单 → 数据助手；桌面快捷方式（按你勾选）；控制面板 → 程序和功能 →「数据助手」（可卸载）。</p>
+
+  <h3>静默安装（IT 批量部署）</h3>
+  <pre class="code-plain">DataAssistantSetup.exe /S /dir="D:\DataAssistant"
+DataAssistantSetup.exe /S /noshortcut      <span>← 不建桌面快捷方式</span></pre>
+
+  <h3>免安装直接运行</h3>
+  <p>把整个文件夹拷到任意位置，双击 <code>DataAssistant.exe</code> 即可。同目录下的 DLL 必须一起带着（缺一个会提示找不到程序集）。</p>
+
+  <h3>卸载</h3>
+  <ul>
+    <li>控制面板 → 程序和功能 → 数据助手 → 卸载</li>
+    <li>或运行安装目录下的 <code>Uninstall.exe</code></li>
+    <li>卸载会清掉：安装目录、注册表卸载项、开始菜单与桌面快捷方式</li>
+  </ul>
+
+  <h3>Windows 首次运行的安全提示</h3>
+  <div class="callout c-warn">
+    <span class="t">遇到「Windows 已保护你的电脑」</span><br>
+    点「更多信息」→「仍要运行」即可。想彻底消除提示，双击随包的 <code>DataAssistantSetup.cer</code> →「安装证书」→ 选择「受信任的根证书颁发机构」→ 完成。
+  </div>
+</section>
+
+<!-- ===================== 3 托盘 ===================== -->
+<section id="s3">
+  <h2><span class="num">3</span>托盘与生命周期</h2>
+  <table>
+    <thead><tr><th style="width:230px">操作</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td class="nowrap">点击窗口右上角 <kbd>X</kbd> / <kbd>Alt</kbd>+<kbd>F4</kbd></td><td><b>最小化到托盘</b>，进程不退出，定时任务照常执行</td></tr>
+      <tr><td class="nowrap">双击托盘图标</td><td>重新显示主窗口（前台）</td></tr>
+      <tr><td class="nowrap">右键托盘图标 → 显示主界面</td><td>同上，打开主窗口</td></tr>
+      <tr><td class="nowrap">右键托盘图标 → <b>退出</b></td><td><b>真正结束进程</b>（唯一的退出方式）</td></tr>
+    </tbody>
+  </table>
+  <div class="callout c-info">
+    <span class="t">设计意图</span>关闭窗口 ≠ 退出。只有右键菜单的「退出」才会保存设置并结束进程，避免误关窗口导致定时任务中断。
+  </div>
+  <h3>开机启动</h3>
+  <p>在「定时自动备份」页勾选「开机启动并最小化到托盘」。程序优先通过<b>任务计划程序</b>注册（静默、不弹 UAC），失败自动回退到注册表 <code>HKCU Run</code> 键；登录后会以 <code>/tray</code> 模式后台静默启动。</p>
+  <h3>右下角时钟</h3>
+  <p>主窗口底部状态栏右侧实时显示当前<b>日期、星期、时间</b>，每秒刷新，同时显示任务状态（如「正在备份中…」）。</p>
+</section>
+
+<!-- ===================== 4 数据整理 ===================== -->
+<section id="s4">
+  <h2><span class="num">4</span>模块一：数据整理</h2>
+  <p>把散落在各文件夹里的 CSV / TXT / Excel（<code>.xls</code>/<code>.xlsx</code>）汇总成一张总表，按规则删掉脏数据，再导出。</p>
+
+  <h3>操作流程</h3>
+  <ol class="steps">
+    <li>「源文件夹」→ 选放表格的目录，勾选「包含子文件夹」（递归扫描）</li>
+    <li>「导出文件夹」→ 选输出位置</li>
+    <li>点「汇总」→ 所有表格合并成一张总表，原始文件名作为溯源列</li>
+    <li>在「删除规则」分组里勾选要启用的规则（见下表）</li>
+    <li>点「预览删除」→ 高亮将被删掉的行，并弹窗统计每条规则删了几行</li>
+    <li>确认无误后点「应用删除」</li>
+    <li>在「筛选并导出」分组里选关键字、筛选列、方式、格式，点「导出」；<br>或直接点「<b>导出清洗结果</b>」一键导出清洗后的<b>合并总表</b></li>
+  </ol>
+
+  <h3>删除规则一览</h3>
+  <table>
+    <thead><tr><th style="width:230px">规则</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>删除 SN 列为空的行</td><td>SN 列（序列号）为空即删</td></tr>
+      <tr><td>SN 列 = 以下占位符</td><td><b>整格精确匹配</b>才删，默认 <code>SN,SN1,NOSN</code></td></tr>
+      <tr><td>其它列含关键字</td><td><b>子串匹配</b>，命中即删，默认 <code>999,999.999</code></td></tr>
+      <tr><td>关键字匹配列</td><td>指定只查某一列（留空 = 查所有其它列）</td></tr>
+      <tr><td>删除 SN 重复的行</td><td>重复 SN 只留一条（默认留首条，可改末条）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout c-danger">
+    <span class="t">最易踩的坑</span>
+    <ul>
+      <li>「其它列含关键字」是<b>子串匹配</b>。填 <code>999</code> 会扫描所有非 SN 列，<b>时间戳、编号里带 999 的正常数据会被误删</b></li>
+      <li>务必用「关键字匹配列」限定到具体那一列（例如 <code>StationID</code>），这是最安全的用法</li>
+      <li>删除不可撤销 —— 先用「预览删除」核对统计，必要时先备份原表</li>
+    </ul>
+  </div>
+
+  <h4>匹配规则补充</h4>
+  <ul>
+    <li>关键字一律用<b>英文逗号</b>分隔；只有「方式」选「正则」时整框才当单个正则</li>
+    <li>「方式」选 包含 / 等于 / 开头 时，逗号分隔的每个值都会各自匹配</li>
+    <li>空 SN 不参与去重（归「空 SN」规则管）</li>
+  </ul>
+
+  <h3>筛选并导出</h3>
+  <table>
+    <thead><tr><th style="width:130px">项</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>关键字</td><td>逗号分隔；留空 = 导出全部</td></tr>
+      <tr><td>筛选列</td><td>任意列 / 指定列名（下拉，汇总后自动填充）</td></tr>
+      <tr><td>方式</td><td>包含 / 等于 / 开头 / 正则</td></tr>
+      <tr><td>首行是表头</td><td>勾上则首行当列名，不当数据</td></tr>
+      <tr><td>格式</td><td>CSV（UTF-8 BOM，Excel 直接打开不乱码）/ Excel</td></tr>
+      <tr><td>导出方式</td><td>按原始文件分别导出 / 导出合并总表（<b>只对「筛选并导出」生效</b>）</td></tr>
+    </tbody>
+  </table>
+  <div class="callout c-ok">
+    <span class="t">两个按钮的区别</span>
+    <ul>
+      <li><b>导出清洗结果</b> = 一键完成「汇总 → 应用删除规则 → 只导出合并总表」，无需先点「应用删除」，且<b>不受「按原始文件分别导出」勾选影响</b></li>
+      <li><b>筛选并导出</b> = 尊重两个勾选框；想按来源文件拆分成多个文件，走这里</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== 5 数据比对 ===================== -->
+<section id="s5">
+  <h2><span class="num">5</span>模块二：数据比对</h2>
+  <p>两个不同表格，以表 A 的 SN 顺序为主轴，去表 B 找同一个 SN，逐列比对值有无差异，结果可导出。</p>
+
+  <h3>操作流程</h3>
+  <ol class="steps">
+    <li>① 表格 A：选文件 → 选 SN 列 → 勾选要比的列（可多选）</li>
+    <li>② 表格 B：选文件 → 选 SN 列 → 勾选要比的列（可多选）</li>
+    <li>③ 设置比对方式与导出：<br>
+        · <b>配对方式</b>：按列名配对（列名相同自动成对）/ 按勾选顺序（按勾选先后一一对应）<br>
+        · <b>配对预览</b>：实时显示配对关系，确认没配错<br>
+        · <b>比对方式</b>：文本精确 / 数值比较（可填容差，如 0.001）/ 包含比较<br>
+        · <b>忽略大小写</b>：勾上后 PASS 与 pass 视为相同<br>
+        · <b>容差</b>：仅数值比较有效，默认 0.000001</li>
+    <li>点「开始比对」</li>
+    <li>结果表：<span style="color:#047857;font-weight:700">绿色=一致</span>　<span style="color:#b91c1c;font-weight:700">红色=不一致</span>　<span style="color:#b45309;font-weight:700">橙色=缺失</span>；勾「只看差异行」可过滤；差异明细逐行列在下方日志（最多 20 行）</li>
+    <li>点「导出比对结果」</li>
+  </ol>
+
+  <h3>未匹配行的处理</h3>
+  <ul>
+    <li>默认不输出（只在 A 有 / 只在 B 有的行都不出现在结果里）</li>
+    <li>勾「输出未匹配行」才会输出</li>
+    <li>勾「包含表 B 多出的 SN」→ 表 B 里 A 没有的 SN 追加到结果末尾</li>
+    <li>序号保留该行在表 A 中的原始位置，剔除后会跳号（如 1、2、4），便于回溯原表</li>
+  </ul>
+  <p>其它细节：「A / B 互换」按钮可对调两边快速换个方向再比；文本比对前统一去掉首尾空格；数值比较先按不变文化解析，失败再按当前区域解析。</p>
+</section>
+
+<!-- ===================== 6 图片查找 ===================== -->
+<section id="s6">
+  <h2><span class="num">6</span>模块三：图片查找</h2>
+  <p>按 SN 清单，把图片从源目录批量复制到目标目录（按 SN 建子文件夹）。</p>
+
+  <h3>操作流程</h3>
+  <ol class="steps">
+    <li>「SN 文件」→ 选一份清单（每行一个 SN）。勾「首行是表头」则按列名 <code>SN</code> 取该列，不勾则取第一列</li>
+    <li>「源文件夹」→ 图片所在目录</li>
+    <li>「导出文件夹」→ 复制到哪里</li>
+    <li>点「扫描预览」→ 列出每个 SN 匹配到几张图片，先核对再复制</li>
+    <li>在「图片格式」区勾选要复制的格式，点「开始复制」</li>
+  </ol>
+
+  <h3>关键行为</h3>
+  <table>
+    <thead><tr><th style="width:170px">项</th><th>行为</th></tr></thead>
+    <tbody>
+      <tr><td>可选格式</td><td><b>JPG / PNG / BMP</b> 三项，默认全选；JPG 项同时包含 <code>.jpg</code> 与 <code>.jpeg</code></td></tr>
+      <tr><td>一个都不勾</td><td>不复制任何图片，且<b>不会残留空文件夹</b></td></tr>
+      <tr><td>SN 重复</td><td>同一 SN 命中多个同名文件夹时，<b>只复制创建时间最早的那一个</b>，其余忽略并在日志注明</td></tr>
+      <tr><td>中途取消</td><td>复制/扫描进行中，<b>再次点击该按钮即变为「取消」</b>，可随时中断（每复制一个文件就检查一次取消信号）</td></tr>
+      <tr><td>包含子文件夹</td><td>递归查找源目录下的所有子目录</td></tr>
+    </tbody>
+  </table>
+  <div class="callout c-info"><span class="t">建议</span>大批量复制前先跑一次「扫描预览」，确认命中数与路径无误，再执行复制，可省去反复试错的时间。</div>
+</section>
+
+<!-- ===================== 7 系统优化 ===================== -->
+<section id="s7">
+  <h2><span class="num">7</span>模块四：系统优化</h2>
+  <p>含 8 个子页签。程序会自动请求管理员权限；用户取消 UAC 则降级运行（系统目录清理、HKLM 启动项修改会跳过，其余正常）。</p>
+
+  <table>
+    <thead><tr><th style="width:130px">子页签</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>垃圾清理</td><td>扫描清理临时文件、浏览器缓存、AI 工具垃圾、系统日志等 45 个目标点。只删文件保留目录，权限不足逐个跳过</td></tr>
+      <tr><td>磁盘分析</td><td>各盘容量占用、目录体积排行，找空间黑洞</td></tr>
+      <tr><td>启动项管理</td><td>列出开机自启项（注册表 Run/RunOnce + 启动文件夹），可启用/禁用</td></tr>
+      <tr><td>性能优化</td><td>释放内存、清空工作集、开关窗口动画等即时优化项</td></tr>
+      <tr><td>系统优化项</td><td>25 项系统设置勾选（服务、注册表、隐私强化等）</td></tr>
+      <tr><td>重复文件</td><td>MD5 查重，路径最短/最早的一个保留，其余勾选为可删</td></tr>
+      <tr><td>路径配置</td><td>用户库迁移、AI 产出重定向根目录、AI 垃圾清理路径清单</td></tr>
+      <tr><td>网络与取相</td><td>Cognex《取相非正常失败》对策，10 个网卡调优项（巨帧 9014、关闭节能以太网、接收缓冲区取最大、禁用 USB 选择性暂停、禁用 PCIe 链接状态等）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout c-danger">
+    <span class="t">不可逆操作</span>
+    <ul>
+      <li>垃圾清理：清理前二次确认，<b>不进回收站</b>，无法撤销</li>
+      <li>重复文件删除：<b>请人工核对后</b>再删</li>
+      <li>橙色「需人工处理」提示的是 BIOS / 接线问题，程序改不了，需手动处理</li>
+    </ul>
+  </div>
+
+  <div class="callout c-ok">
+    <span class="t">安全机制（可回滚）</span>
+    <ul>
+      <li>「系统优化项」所有注册表/服务改动，写入前自动备份原值（含「原本就不存在」这个事实本身）</li>
+      <li>备份文件：<code>%APPDATA%\DataAssistant\OptimizerBackup\registry_backup.txt</code>，点「一键还原」全部回滚</li>
+      <li>禁用启动项时，值搬到备份键 <code>HKCU/HKLM\Software\DataAssistant\DisabledStartup</code>，可完整还原</li>
+    </ul>
+  </div>
+
+  <h3>提权相关</h3>
+  <ul>
+    <li>启动时会弹 UAC 要管理员权限（为了清理系统目录和改 HKLM）</li>
+    <li>程序内带「以管理员身份重新运行」自提权逻辑，自动处理，且先释放单实例互斥量，避免新进程误判「已在运行」</li>
+    <li>未以管理员身份运行时，会明确提示哪些功能被跳过</li>
+  </ul>
+</section>
+
+<!-- ===================== 8 定时备份 ===================== -->
+<section id="s8">
+  <h2><span class="num">8</span>模块五：定时自动备份</h2>
+  <p>把指定的「源文件夹」按设置的周期自动复制到「备份路径\<b>YYYYMMDD</b>」下，完成后按保留个数清理最旧的备份。</p>
+
+  <h3>配置步骤</h3>
+  <ol class="steps">
+    <li>勾选「启用定时自动备份」</li>
+    <li>「源路径」= 要备份的文件夹（整个目录，含子目录）→ 点「选择目录」</li>
+    <li>「备份路径」= 备份存放根目录（内部按日期自动建 YYYYMMDD 子文件夹）</li>
+    <li>「备份周期」= 每天 / 每周 / 每月（每周≈每 7 天，每月≈每 30 天触发）</li>
+    <li>「备份时间」= 每天该时刻开始备份（<code>HH:mm</code>，24 小时制）</li>
+    <li>「保留个数」= 只保留最近 N 个日期文件夹，超出的最旧备份自动删除</li>
+    <li>勾选「开机启动并最小化到托盘」→ 登录后自动后台运行</li>
+  </ol>
+
+  <h3>执行行为</h3>
+  <ul>
+    <li>到达周期的备份时刻触发；备份过程<b>在后台线程执行</b>，不卡界面、不影响其它软件运行</li>
+    <li>状态栏显示「正在备份中…」；完成后显示「上次备份：日期时间」</li>
+    <li>备份完成后立即检查保留个数，删掉超出的最旧备份</li>
+    <li>全过程记录在运行日志页</li>
+  </ul>
+  <div class="callout c-warn">
+    <span class="t">注意</span>源路径不存在时任务会跳过并记录日志，不会报错干扰。首次使用建议把「备份时间」设成几分钟后，验证一次生成结果是否符合预期。
+  </div>
+</section>
+
+<!-- ===================== 9 定时删图 ===================== -->
+<section id="s9">
+  <h2><span class="num">9</span>模块六：定时自动删图</h2>
+  <p>每天在设定时刻，删除指定路径下「<b>创建时间</b>」超过保留天数的<b>子文件夹</b>（整个文件夹一起删）。最多可设 10 个任务。</p>
+
+  <h3>配置步骤</h3>
+  <ol class="steps">
+    <li>点「添加任务」（最多 10 个）</li>
+    <li>每行填：<br>
+        · <b>路径</b>：点该行「浏览」列的「<b>选择</b>」按钮挑选目录，也可直接双击「路径」列手填（该目录的<b>下一级子文件夹</b>会被判断年龄）<br>
+        · <b>删除时间</b>：<code>HH:mm</code>，每天该时刻触发一次<br>
+        · <b>保留天数</b>：文件夹创建时间距今超过该天数即删除<br>
+        · <b>启用</b>：是否参与定时执行</li>
+    <li>选中行后点「删除选中」可移除任务</li>
+  </ol>
+
+  <div class="callout c-danger">
+    <span class="t">删除是永久的、不可恢复</span>
+    请务必确认路径填写正确。删除动作<b>在后台线程执行</b>，不卡界面；所有动作记录在运行日志与日志文件。
+  </div>
+  <div class="callout c-info">
+    <span class="t">与常规路径规则的例外</span>
+    其它模块的文件路径<b>不保存</b>（避免误操作过期目录），但<b>定时备份与定时删图的路径会被保存</b> —— 定时任务本身就是要求记住路径的。
+  </div>
+</section>
+
+<!-- ===================== 10 日志 ===================== -->
+<section id="s10">
+  <h2><span class="num">10</span>运行日志（所有操作可查）</h2>
+  <table>
+    <thead><tr><th style="width:190px">项</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>日志位置</td><td><code>&lt;程序启动目录&gt;\Log\log_YYYY-MM-DD.txt</code></td></tr>
+      <tr><td>回退位置</td><td>启动目录不可写时自动改存 <code>%APPDATA%\DataAssistant\logs\</code></td></tr>
+      <tr><td>滚动方式</td><td>按天滚动，一天一个文件</td></tr>
+      <tr><td>查看方式</td><td>主窗口「运行日志」页实时显示；也可直接用记事本打开文件</td></tr>
+      <tr><td>记录内容</td><td>启动/退出、触发备份、触发删图、每步结果、开机启动开关、异常错误等全部动作</td></tr>
+    </tbody>
+  </table>
+  <p>日志行格式：</p>
+  <pre class="code-plain">[2026-10-29 23:47:40] [INFO] [App] 数据助手已启动(托盘模式)
+[2026-10-29 23:50:02] [INFO] [Backup] 触发自动备份
+[2026-10-29 23:50:41] [WARN] [AutoDelete] 路径不存在，跳过: D:\xxx
+[2026-10-29 23:51:10] [ERROR] [Backup] 复制失败: xxx -&gt; 磁盘空间不足</pre>
+  <p>级别含义：<code>INFO</code> 正常信息　<code>WARN</code> 警告（已跳过，不影响运行）　<code>ERROR</code> 错误（需关注）。</p>
+</section>
+
+<!-- ===================== 11 设置保存 ===================== -->
+<section id="s11">
+  <h2><span class="num">11</span>设置保存与配置</h2>
+  <p>程序会记住你的操作习惯，下次打开直接是上次的设置，不用重新勾一遍。</p>
+
+  <h3>会保存的（参数类）</h3>
+  <table>
+    <thead><tr><th style="width:120px">面板</th><th>保存内容</th></tr></thead>
+    <tbody>
+      <tr><td>数据整理</td><td>17 项：4 个删除规则勾选、重复 SN 保留首条/末条、占位符与关键字列表、关键字匹配列、SN 列、筛选关键字/列/方式、导出格式、导出方式、包含子文件夹、首行是表头</td></tr>
+      <tr><td>数据比对</td><td>11 项 + 2 列表：配对方式、比对方式、忽略大小写、容差、包含表 B 多出的 SN、输出未匹配行、只看差异行、首行是表头、导出格式、A/B 的 SN 列与勾选列（<b>连勾选先后顺序一起记</b>）</td></tr>
+      <tr><td>图片查找</td><td>首行是表头、勾选的图片格式（JPG/PNG/BMP）</td></tr>
+      <tr><td>系统优化</td><td>25 个系统优化项勾选 + 10 个网卡调优项勾选 + 重复文件扫描目录</td></tr>
+      <tr><td>定时备份</td><td>启用、源路径、备份路径、周期、时间、保留个数、开机启动</td></tr>
+      <tr><td>定时删图</td><td>全部任务行（路径、删除时间、保留天数、启用）</td></tr>
+    </tbody>
+  </table>
+
+  <h3>不会保存的</h3>
+  <ul>
+    <li>普通模块的<b>文件/文件夹路径</b>（数据文件夹、导出文件夹、表格文件、源/目标目录） —— 路径与当次任务强相关，记住旧路径容易误操作到过期目录，所以每次启动都是空的，由你选一次</li>
+    <li>启动项管理里的启用/禁用状态 —— 运行时操作，有备份键可还原</li>
+    <li>汇总后的数据、比对结果、扫描结果 —— 任务产物，不是设置</li>
+  </ul>
+
+  <h3>保存时机</h3>
+  <ul>
+    <li>通过托盘右键「退出」正常关闭时</li>
+    <li>每 <b>60 秒</b>自动保存一次（兜底：万一被强杀，最多丢 1 分钟内的改动）</li>
+  </ul>
+
+  <h3>配置文件位置与格式</h3>
+  <pre class="code-plain">&lt;启动目录&gt;\settings.xml
+启动目录不可写时：%APPDATA%\DataAssistant\settings.xml</pre>
+  <p>XML（UTF-8），可读可手工编辑，按面板分节：</p>
+  <pre class="code-plain">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;Settings&gt;
+  &lt;Section name="AutoBackup"&gt;
+    &lt;Item key="Enabled" value="1" /&gt;
+    &lt;Item key="Source" value="D:\Cognex\Vision" /&gt;
+    &lt;Item key="Keep" value="7" /&gt;
+  &lt;/Section&gt;
+  &lt;Section name="AutoDelete"&gt;
+    &lt;List name="Tasks"&gt;
+      &lt;Value&gt;D:\Data\Wip|03:00|30|1|&lt;/Value&gt;
+    &lt;/List&gt;
+  &lt;/Section&gt;
+&lt;/Settings&gt;</pre>
+  <div class="callout c-ok">
+    <span class="t">小贴士</span>
+    <ul>
+      <li>删掉 <code>settings.xml</code> = 恢复出厂设置（所有参数回初始值，定时任务需重设）</li>
+      <li>文件损坏时程序会静默忽略并用默认值启动，不会崩</li>
+      <li>值里的中文、竖线、逗号、等号都会正确转义，无解析歧义</li>
+      <li>从旧版升级：首次启动自动导入旧的 <code>ui_settings.cfg</code>（base64）并改名为 <code>ui_settings.cfg.bak</code>，原设置不丢</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== 12 FAQ ===================== -->
+<section id="s12">
+  <h2><span class="num">12</span>常见问题</h2>
+  <table>
+    <thead><tr><th style="width:270px">问题</th><th>解决办法</th></tr></thead>
+    <tbody>
+      <tr><td>找不到 NPOI / 某个 DLL？</td><td>绿色版必须整个文件夹一起拷贝，别只拿 <code>DataAssistant.exe</code>。缺 DLL 时会提示「找不到程序集」</td></tr>
+      <tr><td>改了设置，下次打开又变回原来？</td><td>检查 <code>&lt;启动目录&gt;\settings.xml</code> 是否存在且可写。另外「导出勾选列」这类与表格内容相关的设置，要先做一次汇总或载入表格才会有值</td></tr>
+      <tr><td>点了删除，数据全没了？</td><td>先点「预览删除」看统计。常见原因：「其它列含关键字」填了 <code>999</code>，时间戳/编号里含 999 的正常行被误删 —— 用「关键字匹配列」限定到具体列</td></tr>
+      <tr><td>数据比对提示「没有可配对的列」？</td><td>按列名配对要求两边列名完全一致；按顺序配对要求两边都至少勾一列。看「配对预览」确认</td></tr>
+      <tr><td>比对说「不一致」但值看着一样？</td><td>检查是否漏勾「忽略大小写」，以及数值模式下容差是否过小</td></tr>
+      <tr><td>图片复制没停 / 点取消没反应？</td><td>进行中再次点击原按钮即变为「取消」（v1.1 起每个文件复制后都会检查取消信号，立即中断）</td></tr>
+      <tr><td>同一 SN 复制了多个文件夹？</td><td>v1.1 起只复制「创建时间最早」的那一个同名文件夹</td></tr>
+      <tr><td>定时任务没执行？</td><td>① 确认勾选「启用」② 确认托盘进程在跑（右键退出后就不会执行）③ 看运行日志里的触发记录</td></tr>
+      <tr><td>日志文件在哪？</td><td>程序启动目录下 <code>Log\log_YYYY-MM-DD.txt</code></td></tr>
+      <tr><td>系统优化某些项没生效？</td><td>大概率没用管理员权限运行。请允许 UAC 弹窗</td></tr>
+      <tr><td>卸载后还剩点东西？</td><td>程序正在运行时文件被占用会删不掉 —— 右键托盘「退出」后重跑 <code>Uninstall.exe</code></td></tr>
+      <tr><td>能同时开两个程序吗？</td><td>不能。有单实例保护，重复启动会提示「数据助手已在运行」</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== 13 版本 ===================== -->
+<section id="s13">
+  <h2><span class="num">13</span>版本信息</h2>
+  <table>
+    <tbody>
+      <tr><th style="width:150px">程序名</th><td>数据助手 (DataAssistant)</td></tr>
+      <tr><th>版本</th><td>1.1.0</td></tr>
+      <tr><th>运行环境</th><td>Windows 7 / 10 / 11，.NET Framework 4.8</td></tr>
+      <tr><th>依赖</th><td>自带 19 个 DLL（含 NPOI），无需另装任何运行库</td></tr>
+      <tr><th>配置</th><td><code>settings.xml</code>（XML，UTF-8，可读可改）</td></tr>
+      <tr><th>日志</th><td><code>Log\log_YYYY-MM-DD.txt</code>（按天滚动）</td></tr>
+      <tr><th>源代码</th><td><code>DataAssistant/</code> 目录（SDK 版 + 离线 Classic 版两份 csproj）</td></tr>
+      <tr><th>重新出包</th><td>运行 <code>安装包\build-installer.ps1</code>（编译 → 打载荷 → 编译安装程序 → 签名 → Defender 校验 → 完整性校验）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>数据助手 DataAssistant v1.1.0 · 操作指南 · 最后更新 2026-10-29</footer>
+</main>
+</div>
+
+<a class="top-link" href="#s1" title="回到顶部">↑</a>
+</body>
+</html>

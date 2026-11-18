@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>DataAssistant</AssemblyName>
+    <RootNamespace>DataAssistant</RootNamespace>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <LangVersion>7.3</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- .NET Framework 4.8 SDK 风格：自动引用整个框架集（含 System.Windows.Forms / System.Drawing） -->
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NPOI" Version="2.6.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="logo.png" />
+    <!-- App.config 是给经典版(Classic)用的绑定重定向，SDK 版用自带还原机制，排除它以免被自动拾取产生警告 -->
+    <None Remove="App.config" />
+    <!-- AssemblyInfo.cs 仅供经典版用；SDK 版自动生成程序集特性，排除以免重复 -->
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+    <!-- 更新日志：随程序一起发布到安装目录，便于用户查看版本变更 -->
+    <Content Include="更新日志.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+
+  <!--
+    经典（非 SDK）格式 .NET Framework 4.8 工程 —— 离线自包含版。
+    NPOI 及其全部依赖已放在项目内 lib/NPOI/，用相对 HintPath 引用，无需联网还原 NuGet。
+    适用场景：你的主程序也是经典 csproj，想保持完全一致的项目格式时，用本文件替换/并列使用。
+
+    用法（任一种）：
+      1) 用 Visual Studio 打开「生成」；
+      2) msbuild DataAssistant.Classic.csproj /t:Build
+      3) dotnet build DataAssistant.Classic.csproj -c Release
+    只要 lib/NPOI/ 目录随项目一起拷贝，任何机器都能直接编译，运行时不缺 DLL。
+
+    说明：与 DataAssistant.csproj（SDK 风格）二选一；两份可同目录并存，
+          但同一时刻只能以其中一个作为项目文件被打开/生成（obj/bin 目录共享）。
+  -->
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A1B2C3D4-0001-4E5F-8A9B-000000000001}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>DataAssistant</RootNamespace>
+    <AssemblyName>DataAssistant</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <!-- Windows Forms 项目类型 GUID + C# 项目类型 GUID -->
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-3D5F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <LangVersion>7.3</LangVersion>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- .NET Framework 4.8 框架引用 -->
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- NPOI 及全部依赖：离线存放于项目内 lib/NPOI/，用相对 HintPath 引用 -->
+    <Reference Include="BouncyCastle.Cryptography"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\BouncyCastle.Cryptography.dll</HintPath></Reference>
+    <Reference Include="Enums.NET"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\Enums.NET.dll</HintPath></Reference>
+    <Reference Include="ICSharpCode.SharpZipLib"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\ICSharpCode.SharpZipLib.dll</HintPath></Reference>
+    <Reference Include="MathNet.Numerics"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\MathNet.Numerics.dll</HintPath></Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\Microsoft.IO.RecyclableMemoryStream.dll</HintPath></Reference>
+    <Reference Include="NPOI.Core"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\NPOI.Core.dll</HintPath></Reference>
+    <Reference Include="NPOI.OOXML"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\NPOI.OOXML.dll</HintPath></Reference>
+    <Reference Include="NPOI.OpenXml4Net"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\NPOI.OpenXml4Net.dll</HintPath></Reference>
+    <Reference Include="NPOI.OpenXmlFormats"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\NPOI.OpenXmlFormats.dll</HintPath></Reference>
+    <Reference Include="SixLabors.Fonts"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\SixLabors.Fonts.dll</HintPath></Reference>
+    <Reference Include="SixLabors.ImageSharp"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\SixLabors.ImageSharp.dll</HintPath></Reference>
+    <Reference Include="System.Buffers"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\System.Buffers.dll</HintPath></Reference>
+    <Reference Include="System.Memory"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\System.Memory.dll</HintPath></Reference>
+    <Reference Include="System.Numerics.Vectors"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\System.Numerics.Vectors.dll</HintPath></Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\System.Runtime.CompilerServices.Unsafe.dll</HintPath></Reference>
+    <Reference Include="System.Security.AccessControl"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\System.Security.AccessControl.dll</HintPath></Reference>
+    <Reference Include="System.Security.Cryptography.Xml"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\System.Security.Cryptography.Xml.dll</HintPath></Reference>
+    <Reference Include="System.Security.Principal.Windows"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\System.Security.Principal.Windows.dll</HintPath></Reference>
+    <Reference Include="System.Text.Encoding.CodePages"><HintPath>$(MSBuildThisFileDirectory)lib\NPOI\System.Text.Encoding.CodePages.dll</HintPath></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 源码文件（经典风格显式列出；与 SDK 版内容完全一致） -->
+    <Compile Include="DataAssistantCore.cs" />
+    <Compile Include="SettingsStore.cs" />
+    <Compile Include="DataAggregatorCore.cs" />
+    <Compile Include="DataAggregatorPanel.cs" />
+    <Compile Include="DataCompareCore.cs" />
+    <Compile Include="DataComparePanel.cs" />
+    <Compile Include="DataAssistantPanel.cs" />
+    <Compile Include="WindowsOptimizerCore.cs" />
+    <Compile Include="WindowsOptimizerPanel.cs" />
+    <Compile Include="WindowsOptimizerSettings.cs" />
+    <Compile Include="WindowsOptimizerPanel.Tweaks.cs" />
+    <Compile Include="NetworkTuningCore.cs" />
+    <Compile Include="WindowsOptimizerPanel.Network.cs" />
+    <Compile Include="CsvCopyForm.cs" />
+    <Compile Include="DataAssistantForm.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="AutoStartManager.cs" />
+    <Compile Include="AutoBackupCore.cs" />
+    <Compile Include="AutoDeleteCore.cs" />
+    <Compile Include="SchedulerService.cs" />
+    <Compile Include="AutoBackupPanel.cs" />
+    <Compile Include="AutoDeletePanel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 界面 Logo（嵌入资源，面板顶部显示） -->
+    <EmbeddedResource Include="logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 应用图标（exe 图标 + 窗体标题栏） -->
+    <None Include="appicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!-- 绑定重定向配置（解决 netstandard 桥接 DLL 版本冲突） -->
+    <None Include="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!-- 更新日志：随程序一起发布到安装目录，便于用户查看版本变更 -->
+    <Content Include="更新日志.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

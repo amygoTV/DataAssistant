@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>DataAssistantSetup</AssemblyName>
+    <RootNamespace>DataAssistantSetup</RootNamespace>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <LangVersion>7.3</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- 安装程序本身无任何第三方依赖：只用系统自带的 zip / COM 快捷方式 / 注册表 -->
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- 内嵌安装载荷（由 build-installer.ps1 生成：程序 Release 产物打包成的 payload.zip） -->
+    <EmbeddedResource Include="payload.zip" LogicalName="payload.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- SDK 风格工程默认不引用这两个压缩程序集，需显式添加（.NET Framework 4.8 自带，无需 NuGet） -->
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+  </ItemGroup>
+</Project>

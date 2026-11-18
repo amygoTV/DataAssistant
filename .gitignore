@@ -1,0 +1,52 @@
+# ============ 敏感文件：代码签名私钥与证书（绝对不能进公开仓库）============
+*.pfx
+*.p12
+*.key
+*.snk
+*.cer
+# 证书密码一旦提交同样泄露，若将来出现含密码的脚本请删除
+*password*.txt
+*密码*.txt
+
+# ============ 编译产物 / 缓存 ============
+bin/
+obj/
+.vs/
+*.cache
+*.pdb
+*.ilk
+*.exp
+*.tlog
+*.log
+*.tmp
+*.user
+*.suo
+*.sln.docstates
+
+# ============ 发布包 / 大体积成品（源码仓库不需要）=============
+*.zip
+*.7z
+*.rar
+*.exe
+*_V*.csproj
+DataAssistant-发布版/
+发布版/
+
+# ============ 日志文件与运行时数据 ============
+Log/
+logs/
+*.log
+settings.xml
+
+# ============ 系统 / 编辑器 ============
+Thumbs.db
+Desktop.ini
+.DS_Store
+.idea/
+*.swp
+
+# ============ WorkBuddy / 编辑器工作区内部数据 ============
+.workbuddy/
+
+# ============ 排除项例外：需要保留的工程文件 ============
+# 说明：appicon.ico / logo.png / 更新日志.txt / 操作指南.html 均为源码资源，保留
